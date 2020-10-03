@@ -7,6 +7,7 @@ pub struct App {
 
 pub enum Msg {
     AddOne,
+    RemoveOne,
 }
 
 impl Component for App {
@@ -23,6 +24,7 @@ impl Component for App {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::AddOne => self.counter += 1,
+            Msg::RemoveOne => self.counter -= 1,
         }
         true
     }
@@ -32,6 +34,7 @@ impl Component for App {
             <div>
             <p> {"Counter: "} { self.counter }</p>
                 <button onclick=self.link.callback(|_| Msg::AddOne)>{ "Add 1" }</button>
+                <button onclick=self.link.callback(|_| Msg::RemoveOne)>{ "Remove 1" }</button>
             </div>
         }
     }
