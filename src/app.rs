@@ -1,7 +1,8 @@
 use yew::prelude::*;
+use rand::prelude::*;
 
 pub struct App {
-    counter: i64,
+    items: Vec<i64>,
     link: ComponentLink<Self>,
 }
 
@@ -15,26 +16,43 @@ impl Component for App {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        App {
-          link,
-          counter: 0
-        }
+        App { link, items: Vec::new() }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::AddOne => self.counter += 1,
-            Msg::RemoveOne => self.counter -= 1,
+            Msg::AddOne => self.items.push(random()),
+            Msg::RemoveOne => {
+                self.items.pop();
+            }
         }
         true
-    }
+    }  
 
     fn view(&self) -> Html {
+        let render_item = |item| {
+            html! {
+                <>
+                    <tr><td>{ item }</td></tr>
+                </>
+            }
+        };
         html! {
-            <div>
-            <p> {"Counter: "} { self.counter }</p>
-                <button onclick=self.link.callback(|_| Msg::AddOne)>{ "Add 1" }</button>
-                <button onclick=self.link.callback(|_| Msg::RemoveOne)>{ "Remove 1" }</button>
+            <div class="main">
+                <div class="card">
+                    <header>
+                        {"Items: "}
+                    </header>
+                    <div class="card-body">
+                        <table class="primary">
+                            { for self.items.iter().map(render_item) }
+                        </table>
+                    </div>
+                    <footer>
+                        <button onclick=self.link.callback(|_| Msg::AddOne)>{ "Add item" }</button> {" "}
+                        <button onclick=self.link.callback(|_| Msg::RemoveOne)>{ "Remove item" }</button>
+                    </footer>
+                </div>
             </div>
         }
     }
