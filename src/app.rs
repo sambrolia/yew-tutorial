@@ -1,17 +1,19 @@
 use yew::prelude::*;
 use rand::prelude::*;
-use yew::services::ConsoleService;
+use yew::services::{ConsoleService, DialogService};
 
 
 pub struct App {
     items: Vec<i64>,
     link: ComponentLink<Self>,
     console: ConsoleService,
+    dialog: DialogService,
 }
 
 pub enum Msg {
     AddOne,
     RemoveOne,
+    About
 }
 
 impl Component for App {
@@ -23,21 +25,27 @@ impl Component for App {
             link, 
             items: Vec::new(), 
             console: ConsoleService::new(), 
+            dialog: DialogService::new(),
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::About => self.dialog.alert("Purposeless App"),
             Msg::AddOne => {
                 let added: i64 = random();
                 self.items.push(added);
                 self.console.log(format!("Added: {}", added).as_str());
+                self.console.info("Added 1 elemet to the vec");
             }
             Msg::RemoveOne => {
                 let removed = self.items.pop();
-                self.console
-                    .log(format!("Removed {}", removed.unwrap_or_default()).as_str());
+                match removed {
+                    Some(x) => self.console.warn(format!("Removed {}", x).as_str()),
+                    None => self.console.error("No more elements to remove!"),
+                };
             }
+            
         }
         true
     }  
@@ -54,7 +62,8 @@ impl Component for App {
             <div class="main">
                 <div class="card">
                     <header>
-                        {"Items: "}
+                        <h2>{"Items: "}</h2>
+                        <button onclick=self.link.callback(|_| Msg::About)>{ "About" }</button>
                     </header>
                     <div class="card-body">
                         <table class="primary">
